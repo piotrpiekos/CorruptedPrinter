@@ -31,6 +31,15 @@ loose_y   = [];
 # Load the MATLAB file
 data = loadmat('add_dudw_data.mat');
 with open('32770_1.csv', 'r') as csv_file:
+#with open('./loose_belt/testing/37179_1.csv', 'r') as csv_file:
+#with open('./loose_belt/testing/37861_1.csv', 'r') as csv_file:
+#with open('./loose_belt/testing/37866_2.csv', 'r') as csv_file:
+#with open('./loose_belt/training/32770_2.csv', 'r') as csv_file:
+#with open('./loose_belt/training/36069_2.csv', 'r') as csv_file:
+#with open('./loose_belt/training/36091_1.csv', 'r') as csv_file:
+#with open('./loose_belt/validation/37332_1.csv', 'r') as csv_file:
+#with open('./loose_belt/validation/37416_1.csv', 'r') as csv_file:
+#with open('./loose_belt/validation/37747_1.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
         corr_x.append(int(row[1]))
@@ -45,7 +54,6 @@ with open('32770_1.csv', 'r') as csv_file:
         loose_x.append(int(row[14]))
         loose_y.append(int(row[15]))
         
-
 # Access MATLAB variables as Python dictionaries
 array_corruptions = data['all_data']
 array_corruptions = array_corruptions[0:5000];
