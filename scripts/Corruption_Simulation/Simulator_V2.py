@@ -1,22 +1,12 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 14 20:53:32 2023
-
-@author: caballrm
-"""
-
 # Author: Renzo Caballero
 # KAUST: King Abdullah University of Science and Technology
 # email: renzo.caballerorosas@kaust.edu.sa caballerorenzo@hotmail.com
 # Website: renzocaballero.org, https://github.com/RenzoCab
-# September 2023; Last revision: 04/09/2023
-
-## IMPORTANT!!! RUN ONLY CELLS 1 AND 4!
+# September 2023; Last revision: 15/09/2023
 
 from scipy.io import loadmat
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
 
 corr_x    = [];
 corr_y    = [];
@@ -30,16 +20,19 @@ num_lay   = [];
 
 # Load the MATLAB file
 data = loadmat('add_dudw_data.mat');
-#with open('1750622_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/testing/37332_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/testing/37788_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/testing/38009_1.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/training/1743322_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/training/1750622_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/training/1764652_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/validation/37095_2.csv', 'r') as csv_file:
-#with open('./corrupted_pulleys/validation/37568_2.csv', 'r') as csv_file:
-with open('./corrupted_pulleys/validation/37841_1.csv', 'r') as csv_file:
+with open('./corrupted_pulleys/100029_2.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100032_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100336_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100343_2.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100344_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100349_2.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100471_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100606_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100730_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100730_2.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100827_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100887_1.csv', 'r') as csv_file:
+#with open('./corrupted_pulleys/100887_2.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
         corr_x.append(int(row[1]))

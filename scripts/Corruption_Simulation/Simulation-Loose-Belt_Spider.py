@@ -1,20 +1,12 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Sep 14 19:35:24 2023
-
-@author: caballrm
-"""
-
 # Author: Renzo Caballero
 # KAUST: King Abdullah University of Science and Technology
 # email: renzo.caballerorosas@kaust.edu.sa caballerorenzo@hotmail.com
 # Website: renzocaballero.org, https://github.com/RenzoCab
-# September 2023; Last revision: 04/09/2023
+# September 2023; Last revision: 15/09/2023
 
 from scipy.io import loadmat
 import csv
 import numpy as np
-import matplotlib.pyplot as plt
 
 corr_x    = [];
 corr_y    = [];
@@ -30,16 +22,18 @@ loose_y   = [];
 
 # Load the MATLAB file
 data = loadmat('add_dudw_data.mat');
-with open('32770_1.csv', 'r') as csv_file:
-#with open('./loose_belt/testing/37179_1.csv', 'r') as csv_file:
-#with open('./loose_belt/testing/37861_1.csv', 'r') as csv_file:
-#with open('./loose_belt/testing/37866_2.csv', 'r') as csv_file:
-#with open('./loose_belt/training/32770_2.csv', 'r') as csv_file:
-#with open('./loose_belt/training/36069_2.csv', 'r') as csv_file:
-#with open('./loose_belt/training/36091_1.csv', 'r') as csv_file:
-#with open('./loose_belt/validation/37332_1.csv', 'r') as csv_file:
-#with open('./loose_belt/validation/37416_1.csv', 'r') as csv_file:
-#with open('./loose_belt/validation/37747_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100028_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100029_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100031_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100032_2.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100343_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100388_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100638_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100638_2.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100641_1.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/100827_2.csv', 'r') as csv_file:
+#with open('./pulleys_and_belt/101168_1.csv', 'r') as csv_file:
+with open('./pulleys_and_belt/103355_2.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
     for row in csv_reader:
         corr_x.append(int(row[1]))
@@ -57,20 +51,6 @@ with open('32770_1.csv', 'r') as csv_file:
 # Access MATLAB variables as Python dictionaries
 array_corruptions = data['all_data']
 array_corruptions = array_corruptions[0:5000];
-print('The number of corruptions is',len(array_corruptions))
-print('The length of each corruption is',len(array_corruptions[0]))
-
-# x should be between 0 and 1100 (here we just choose 500 as an example):
-x_ideal = 500;
-x_corr  = 500;
-# c (corruption) should be between 0 and 4999 (here we just choose 600 as an example):
-c = array_corruptions[600];
-# u (the control) should be either 0, 1, or -1 (here we just choose 1):
-u = 1;
-x_ideal_next = x_ideal + u;
-x_corr_next  = x_corr  + u*c[x_ideal];
-print('Then we move ideally from',x_ideal,'to',x_ideal_next)
-print('Then we move corrupted from',x_corr,'to',x_corr_next)
 
 num_layers = len(np.unique(num_lay))
 elem_layer = np.unique(num_lay)
@@ -167,6 +147,3 @@ for i in range(num_layers):
         inc = inc + 1;
         print('X_',inc,'_',accum_x);
         print('Y_',inc,'_',accum_y);
-                
-        #print(abs(simulated_x_corr[j]-x_corr_t[k+j]));
-        #print(abs(simulated_y_corr[j]-y_corr_t[k+j]));
