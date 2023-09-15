@@ -27,26 +27,37 @@ class LSTMencoder_incontext(nn.Module):
     lstm done over a sequence T, then a neural net that combines the embedding with current point and control
     """
     def __init__(self, lstm_hid_dim, nn_hid_dim):
+        super().__init__()
 
-        self.lstm = nn.LSTM(6, lstm_hid_dim, 2)
+        self.lstm = nn.LSTM(6, lstm_hid_dim, 2, batch_first=True)
 
-        self.nn = nn.Sequential((
+        self.nn = nn.Sequential(
             nn.Linear(4+lstm_hid_dim, nn_hid_dim),
+            nn.ReLU(),
             nn.Linear(nn_hid_dim, nn_hid_dim),
+            nn.ReLU(),
             nn.Linear(nn_hid_dim, nn_hid_dim),
+            nn.ReLU(),
             nn.Linear(nn_hid_dim, 2)
-        ))
+        )
 
         self.T_emb = None
 
     def adapt_to_traj(self, T):
-        self.T_emb = self.lstm(T.unsqueeze(0))
+        # (seq_len, 6)
+
+        T_emb,_ = self.lstm(T)
+        self.T_emb = T_emb[-1]
 
     def __call__(self, state, control):
-        total_emb = torch.concatenate((state.unsqueeze(0), control.unsqueeze(0), self.T_emb))
+        total_emb = torch.cat((state.unsqueeze(0), control.unsqueeze(0), self.T_emb), dim=1)
         return self.nn(total_emb)
 
-    def forward(self, Ts, st_ctrl):
-        return self.nn(torch.concatenate((st_ctrl, self.lstm(Ts))))
+    def forward(self, X, T):
+        # X [batch, 4] T [batch, seq_len, 6]
+
+        T_emb, _ = self.lstm(T)
+        input = torch.cat((X, T_emb[:, -1]), dim=1)
+        return self.nn(input)
 
     

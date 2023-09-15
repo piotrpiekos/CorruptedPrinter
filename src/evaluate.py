@@ -78,7 +78,7 @@ def evaluate_model(model, split='val'):
     :return: MSE over the validation data
     """
     # load the data
-    data_directory = os.path.join('data', 'real_data', 'validation' if split == 'val' else 'test')
+    data_directory = os.path.join('data', 'real_data', 'validation' if split == 'val' else 'testing')
 
     true_simulation = RealSimulator()
 
@@ -123,6 +123,7 @@ def evaluate_model(model, split='val'):
             break
         break
 
+    return np.mean(losses)
 
     return np.mean(losses)
 
