@@ -3,13 +3,13 @@ import torch
 import numpy as np
 import os
 
-from src.models.simple_ml import Oracle, Naive, DirectRandomForest, DirectLightGBM
+from src.models.simple_ml import Oracle, Naive, DirectRandomForest, DirectLightGBM, DirectNeuralNetwork
 from src.Simulator import RealSimulator
 from src.models.LSTM_incontext import LSTMencoder_incontext
 
 import pandas as pd
 
-np.random.seed(1)
+np.random.seed(0)
 
 
 def find_the_best_next(state, model, next_optimal):
@@ -224,7 +224,7 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
     data_for_csv = {'names': [], 'errors': []}
     for file in files:
         file_path = os.path.join(files_directory, file)
-        print(file_path)
+        #print(file_path)
         data = np.genfromtxt(file_path, delimiter=',')
         if len(data) == 0:
             continue
@@ -232,17 +232,17 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
         all_trajectories_counts = np.unique(data[:, 3], return_counts=True)
         all_trajectories = all_trajectories_counts[0]
         longest_traj_id = all_trajectories[all_trajectories_counts[1].argmax()]
-        print('longest traj length: ', all_trajectories_counts[1].max())
+        #print('longest traj length: ', all_trajectories_counts[1].max())
 
         longest_traj = data[data[:, 3] == longest_traj_id]
         model.adapt_to_traj(longest_traj)
 
-        print(all_trajectories.shape)
+        #print(all_trajectories.shape)
 
         opt_trajs = []
         printed_trajs = []
-        #for traj_id in np.random.choice(all_trajectories, 3, replace=False):
-        for traj_id in all_trajectories:
+        for traj_id in np.random.choice(all_trajectories, min(3, len(all_trajectories)), replace=False):
+        #for traj_id in all_trajectories:
 
             cur_trajectory = data[data[:, 3] == traj_id]
             starting_point = cur_trajectory[0, [4, 9]]
@@ -265,6 +265,7 @@ def evaluate_model_adapt_to_body(model, method, split='val'):
 
         err = RMSE(np.concatenate(opt_trajs), np.concatenate(printed_trajs))
         losses.append(err)
+        #print(err)
         data_for_csv['names'].append(file)
         data_for_csv['errors'].append(err)
 
@@ -324,7 +325,7 @@ def print_3dbody(model, body_path):
 
     res = np.concatenate(trajectories)
     print(res.shape)
-    np.savetxt('data/results/rf_100139_1_dense.csv', res)
+    np.savetxt('data/results/lgb_100139_1_dense.csv', res)
 
     return np.mean(losses)
 
@@ -339,29 +340,36 @@ def load_lstm(path):
 
 test_type = 'ext_2'
 files_directory = os.path.join('data', 'corrupted_pulleys', 'validation', test_type)
+#files_directory = os.path.join('data', 'corrupted_pulleys', 'testing', test_type)
 files = np.random.choice(os.listdir(files_directory), 100, replace=False)
 
 # evaluate_model(DirectRandomForest())
 #
 fast = False
 print('Naive: ', evaluate_model_adapt_to_body(Naive(), 'naive'))
-print('Naive: ', evaluate_model_adapt_to_body(Naive(), 'naive'))
+
+#print('Naive: ', evaluate_model_adapt_to_body(Naive(), 'naive'))
 print('Oracle: ', evaluate_model_adapt_to_body(Oracle(), 'oracle'))
 fast = True
+#print('nn: ', evaluate_model_adapt_to_body(DirectNeuralNetwork(), 'naive'))
 print('RF: ', evaluate_model_adapt_to_body(DirectRandomForest(), 'rf'))
 
-# print('lgbm: ', evaluate_model_adapt_to_body(DirectLightGBM()))
+#fast = True
+print('lgbm: ', evaluate_model_adapt_to_body(DirectLightGBM(), 'lgb'))
 
 # model = load_lstm('models/ibex_long.pth')
 # with torch.no_grad():
 #    print('LSTM: ', evaluate_model2(model))
 
 # bodypath = os.path.join('data', 'corrupted_pulleys_and_loose_belt', 'training', '100139_1.csv')
-# bodypath = os.path.join('data', 'corrupted_pulleys', 'training', '100139_pulley_dense.csv')
+bodypath = os.path.join('data', 'corrupted_pulleys', 'training', '100139_pulley_dense.csv')
 # lstm_model = load_lstm('models/ibex_big.pth')
 # with torch.no_grad():
 #    print(print_3dbody(lstm_model, bodypath))
-# print(print_3dbody(Naive(), bodypath))
+fast = False
+print(print_3dbody(Naive(), bodypath))
 # print(print_3dbody(DirectRandomForest(), bodypath))
 
+fast = True
+print(print_3dbody(DirectLightGBM(), bodypath))
 # print(print_3dbody(Oracle(), bodypath))
