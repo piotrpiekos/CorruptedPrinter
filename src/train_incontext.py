@@ -10,10 +10,10 @@ import wandb
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-num_epochs = 10
-lr = 1e-3
-hid_dim = 128
-batch_size = 64
+num_epochs = 30
+lr = 1e-4
+hid_dim = 512
+batch_size = 128
 
 training_data = InContextDataset('training')
 train_dataloader = DataLoader(training_data, batch_size=batch_size, shuffle=True)
@@ -28,7 +28,7 @@ wandb.init(project='CorruptedPrinter')
 logging_frequency = 100
 for epoch in range(num_epochs):
     running_loss = 0.0
-    torch.save(model.state_dict(), 'models/lstmemb.pth')
+    torch.save(model.state_dict(), 'models/lstmemb3.pth')
 
     for i, data in enumerate(train_dataloader):
         X_points, X_trajectories, y_points = data

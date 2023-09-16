@@ -6,7 +6,7 @@ import numpy as np
 
 
 class InContextDataset(Dataset):
-    def __init__(self, split, traj_length=256):
+    def __init__(self, split, dataset_max_size=100, traj_length=512):
         self.split = split
 
         self.traj_length = traj_length
@@ -15,13 +15,13 @@ class InContextDataset(Dataset):
         self.dataset_X_trajectories = None
         self.dataset_y_points = None
 
-        self.prepare_dataset()
+        self.prepare_dataset(dataset_max_size)
 
     def prepare_singlefile_data(self, data, max_num_trajectories=100):
         data = data[:, [3, 5, 10, 6, 11, 8, 13]]  # features are (traj_ id, state, control, next_state), [data_len, 7]
 
         # change next_state to next_state - state
-        data[:, 5:] = data[:, 5:] - data[:, [1,2]]
+        data[:, 5:] = data[:, 5:] - data[:, [1, 2]]
 
         data[:, 0] = data[:, 0] - 1  # fix the indexing after matlab
 
@@ -34,6 +34,12 @@ class InContextDataset(Dataset):
         trajectories = []
         for traj_id in all_trajectories_id:
             cur_trajectory = data[data[:, 0] == traj_id]
+
+            # select every 4th row
+            # inx = np.arange(len(cur_trajectory))
+            # cur_trajectory = cur_trajectory[inx % 4 == 0]
+
+            # padding
             padded_traj = torch.ones((self.traj_length, 7)) * -1  # pad
             padded_traj[:cur_trajectory.shape[0]] = cur_trajectory[:self.traj_length]  # truncate
             trajectories.append(padded_traj)
@@ -48,8 +54,8 @@ class InContextDataset(Dataset):
 
         return X_point, X_trajectories, y_point
 
-    def prepare_dataset(self):
-        data_trajectory = os.path.join('data', 'real_data', self.split)
+    def prepare_dataset(self, dataset_max_size):
+        data_trajectory = os.path.join('data', 'corrupted_pulleys_and_loose_belt', self.split)
         if self.split == 'training':
             filepaths = [os.path.join(data_trajectory, fname) for fname in os.listdir(data_trajectory)]
         else:
@@ -57,11 +63,16 @@ class InContextDataset(Dataset):
                          for fname in os.listdir(os.path.join(data_trajectory, subdir))
                          ]
 
+        if len(filepaths) > dataset_max_size:
+            filepaths = np.random.choice(filepaths, size=dataset_max_size, replace=False)
+
         files_X_points, files_X_trajectories, files_y_points = [], [], []
         for i, filepath in enumerate(filepaths):
             data = torch.from_numpy(
                 np.genfromtxt(filepath, delimiter=",", dtype=np.float32),
             )
+            if len(data)==0:
+                continue
             X_point, X_trajectories, y_point = self.prepare_singlefile_data(data)
             files_X_points.append(X_point)
             files_X_trajectories.append(X_trajectories)
@@ -82,7 +93,6 @@ class InContextDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.dataset_X_points[idx], self.dataset_X_trajectories[idx], self.dataset_y_points[idx]
-
 
 
 """
