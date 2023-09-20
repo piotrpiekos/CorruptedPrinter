@@ -47,12 +47,11 @@ class DirectRandomForest:
         return state + np.abs(control) * diff
 
     def batch_call(self, inputs):
-        abs_vals = np.abs(inputs[:, [2,3]])
-        inputs[:, [2, 3]] = np.sign(inputs[:, [2,3]])
+        abs_vals = np.abs(inputs[:, [2, 3]])
+        inputs[:, [2, 3]] = np.sign(inputs[:, [2, 3]])
 
         diff = self.model.predict(inputs)
-        return inputs[:, :2] + abs_vals* diff
-
+        return inputs[:, :2] + abs_vals * diff
 
 
 class DirectLightGBM:
@@ -73,12 +72,13 @@ class DirectLightGBM:
         return state + np.abs(control) * diff
 
     def batch_call(self, inputs):
-        abs_vals = np.abs(inputs[:, [2,3]])
-        inputs[:, [2, 3]] = np.sign(inputs[:, [2,3]])
+        abs_vals = np.abs(inputs[:, [2, 3]])
+        inputs[:, [2, 3]] = np.sign(inputs[:, [2, 3]])
 
         diff1, diff2 = self.model1.predict(inputs), self.model2.predict(inputs)
         diff = np.stack((diff1, diff2)).T
-        return inputs[:, :2] + abs_vals* diff
+        return inputs[:, :2] + abs_vals * diff
+
 
 class DirectLinearRegression:
     def __init__(self):
@@ -138,13 +138,12 @@ class DirectNeuralNetwork:
                 optimizer.step()
 
     def batch_call(self, inputs):
-        abs_vals = np.abs(inputs[:, [2,3]])
-        inputs[:, [2, 3]] = np.sign(inputs[:, [2,3]])
+        abs_vals = np.abs(inputs[:, [2, 3]])
+        inputs[:, [2, 3]] = np.sign(inputs[:, [2, 3]])
 
         with torch.no_grad():
             diff = self.model(torch.tensor(inputs, dtype=torch.float32))
         return inputs[:, :2] + abs_vals * diff.numpy()
-
 
 
 class Oracle:
